@@ -1,0 +1,85 @@
+version: "3"
+services:
+  #PHP
+  youmas-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - WITH_XDEBUG=true
+    image: youmas-app
+    container_name: youmas-app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS:
+        dev
+        # If you down want to use xDebug, set remote_enable=0
+      PHP_IDE_CONFIG: "serverName=Docker"
+      XDEBUG_CONFIG: remote_host=192.168.0.30 remote_port=9001
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www:rw
+      - ./docker/development/php/local.ini:/usr/local/etc/php/conf.d/local.ini:rw
+    networks:
+      - youmas-net
+
+  #Nginx
+  youmas-webserver:
+    build:
+      context: .
+      dockerfile: "./docker/development/nginx/Dockerfile"
+    container_name: youmas-webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      # - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/development/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - youmas-net
+
+  #MySQL
+  youmas-database:
+    image: mysql:5.7.22
+    container_name: youmas-database
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: youmas
+      MYSQL_ROOT_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./docker/development/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - youmas-net
+
+  #PHP My Admin
+  youmas-phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "7000:80"
+    links:
+      - youmas-database:youmas-database
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASSWORD: codeverze
+      MYSQL_ROOT_PASSWORD: codeverze
+    networks: 
+      - youmas-net
+
+#Networks
+networks:
+  youmas-net:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local

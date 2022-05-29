@@ -1,0 +1,46 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+textarea {
+    resize: none;
+}
+
+@import "tailwindcss/utilities";
+.page-header {
+    background: url("/images/common/header_background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+html {
+    font-family: "Poppins", sans-serif !important;
+}
+
+h1,
+h2 {
+    font-family: "Montserrat Alternates", sans-serif;
+}
+
+p {
+    color: #858585;
+}
+
+.custom-button {
+    background: linear-gradient(to right, #f6cd3e 50%, #171717 50%);
+    background-size: 210% 100%;
+    background-position: right bottom;
+    transition: all 0.5s ease-out;
+}
+.custom-button:hover {
+    background-position: left bottom;
+    color: #171717;
+}
+.custom-button-inverted {
+    background: linear-gradient(to right, #171717 50%, #f6cd3e 50%);
+    background-size: 220% 100%;
+    background-position: right bottom;
+    transition: all 0.5s ease-out;
+}
+.custom-button-inverted:hover {
+    background-position: left bottom;
+    color: #fff;
+}
